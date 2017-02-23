@@ -4,5 +4,4 @@ package main
 import "./dfa"
 
 func main() {
-    dfa.RunDFA()
 }

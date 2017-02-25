@@ -14,7 +14,7 @@ type transpair struct {
 }
 
 func (tr transpair) String() string {
-    return fmt.Sprintf("%v, \"%v\"", tr.state.name, tr.symbol)
+	return fmt.Sprintf("%v, \"%v\"", tr.state.name, tr.symbol)
 }
 
 type trace []transpair
@@ -27,30 +27,29 @@ func (t *trace) addComputation(st state, w string) {
 }
 
 func (t trace) String() string {
-    var transitions string
-    for i, pair := range t {
-        if i == 0 {
-            transitions += fmt.Sprintf("%v\n", pair)
-        } else {
-            transitions += fmt.Sprintf("\t-> %v\n", pair)
-        }
-    }
-    return fmt.Sprintf("%v", transitions)
+	var transitions string
+	for i, pair := range t {
+		if i == 0 {
+			transitions += fmt.Sprintf("%v\n", pair)
+		} else {
+			transitions += fmt.Sprintf("\t-> %v\n", pair)
+		}
+	}
+	return fmt.Sprintf("%v", transitions)
 }
-
 
 /* Error Types -------------------------------------------------------------*/
 
 const (
-    DFAMissingParams = "Missing parameters"
-    DFAInvalidParams = "Invalid parameters"
+	DFAMissingParams = "Missing parameters"
+	DFAInvalidParams = "Invalid parameters"
 )
 
 type DFAError struct {
-    Type string
-    Message string
+	Type    string
+	Message string
 }
 
 func (e *DFAError) Error() string {
-    return fmt.Sprintf("DFA error encountered: %s: %s\n", e.Type, e.Message)
+	return fmt.Sprintf("DFA error encountered: %s: %s\n", e.Type, e.Message)
 }

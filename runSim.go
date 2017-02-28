@@ -7,42 +7,39 @@ import (
 )
 
 var (
-	st1     = dfasim.State{"A", false}
-	st2     = dfasim.State{"B", true}
-	st3     = dfasim.State{"C", false}
-	st4     = dfasim.State{"D", false}
-	trAx    = dfasim.TransPair{st1, "x"}
-	trAy    = dfasim.TransPair{st1, "y"}
-	trBx    = dfasim.TransPair{st2, "x"}
-	trBy    = dfasim.TransPair{st2, "y"}
-	trCx    = dfasim.TransPair{st3, "x"}
-	trCy    = dfasim.TransPair{st3, "y"}
-	trDx    = dfasim.TransPair{st4, "x"}
-	trDy    = dfasim.TransPair{st4, "y"}
-	trtable = map[dfasim.TransPair]dfasim.State{
-		trAx: st2,
-		trAy: st1,
-		trBx: st2,
-		trBy: st2,
-	}
-	trtable2 = map[dfasim.TransPair]dfasim.State{
-		trAx: st3,
-		trAy: st4,
-		trCx: st4,
-		trCy: st2,
-		trDx: st3,
-		trDy: st2,
-		trBx: st2,
-		trBy: st2,
-	}
-
-	sts   = []dfasim.State{st1, st2}
-	sts2  = []dfasim.State{st1, st2, st3, st4}
-	alpha = "xy"
+    alpha_ex4 = "10"
+    stA = dfasim.State{"A", false}
+    stB = dfasim.State{"B", false}
+    stC = dfasim.State{"C", true}
+    stD = dfasim.State{"D", false}
+    stE = dfasim.State{"E", false}
+    stF = dfasim.State{"F", false}
+    stG = dfasim.State{"G", false}
+    stH = dfasim.State{"H", false}
+    sts_ex4 = []dfasim.State{stA, stB, stC, stD, stE, stF, stG, stH}
+    tt_ex4 = map[dfasim.TransPair]dfasim.State{
+        dfasim.TransPair{stA, "0"}: stB,
+        dfasim.TransPair{stA, "1"}: stF,
+        dfasim.TransPair{stB, "0"}: stG,
+        dfasim.TransPair{stB, "1"}: stC,
+        dfasim.TransPair{stC, "0"}: stA,
+        dfasim.TransPair{stC, "1"}: stC,
+        dfasim.TransPair{stD, "0"}: stC,
+        dfasim.TransPair{stD, "1"}: stG,
+        dfasim.TransPair{stE, "0"}: stH,
+        dfasim.TransPair{stE, "1"}: stF,
+        dfasim.TransPair{stF, "0"}: stC,
+        dfasim.TransPair{stF, "1"}: stG,
+        dfasim.TransPair{stG, "0"}: stG,
+        dfasim.TransPair{stG, "1"}: stE,
+        dfasim.TransPair{stH, "0"}: stG,
+        dfasim.TransPair{stH, "1"}: stC,
+    }
 )
 
 func main() {
-    mydfa, _ := dfasim.NewDFA(sts2, st1, alpha, trtable2)
-    fmt.Printf("My DFA: %+v\n", mydfa)
-    mydfa.Minim()
+	mydfa, _ := dfasim.NewDFA(sts_ex4, stA, alpha_ex4, tt_ex4)
+	mydfa.Minim()
+    fmt.Printf("The equivalent states are: (%v, %v), (%v, %v), (%v, %v)\n",
+                stE, stA, stH, stB, stF, stD)
 }

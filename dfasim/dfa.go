@@ -65,7 +65,7 @@ func NewDFA(states []State, state0 State, alpha string, tt map[TransPair]State) 
 	return newdfa, nil
 }
 
-/* 
+/*
  * DFA.DeltaFunc returns the result of the extended transition function for
  * the calling DFA.
  */
@@ -100,67 +100,69 @@ func (dfavar *DFA) DeltaFunc(st State, w string, tr *Trace) (final State, ok boo
 	return dfavar.DeltaFunc(nextSt, u, tr)
 }
 
-/* 
- * DFA.Minim turns the calling DFA into an equivalent DFA with the minimum 
+/*
+ * DFA.Minim turns the calling DFA into an equivalent DFA with the minimum
  * number of states.
  */
 func (dfavar *DFA) Minim() {
-    //1. Build the table of distinguishable states
-    disting := make([][]bool, len(dfavar.States))
-    //Create a map from a state to its index to make this simpler
-    state_index := make(map[State]int)
-    disting_found := false
-    // For every pair of states, if one is final and one is not, distinguish
+	//1. Build the table of distinguishable states
+	et := MakeET(len(dfavar.States))
+	//Create a map from a state to its index to make this simpler
+	state_index := make(map[State]int)
+    for i, st := range dfavar.States {
+        state_index[st] = i
+    }
+	disting_found := false
+	// For every pair of states, if one is final and one is not, distinguish
     for i, st1 := range dfavar.States {
-        disting[i] = make([]bool, len(dfavar.States))
-        state_index[st1] = i
-        for j, st2 := range dfavar.States[i:] {
-            if (st1.Final != st2.Final) {
-                disting[i][j] = true
-                disting_found = true
-                fmt.Printf("Distinguishing states %v and %v\n", st1, st2)
-            }
-        }
-    }
-    // If a distinguishable state was found last round:
-    for disting_found == true {
-        disting_found = false
-    // Loop:
-    //      For every pair of states (p, q)
+		for j, st2 := range dfavar.States {
+			if st1.Final != st2.Final {
+				et.SetDistinguished(i, j)
+				disting_found = true
+			}
+		}
+	}
+	// If a distinguishable state was found last round:
+	for disting_found == true {
+		disting_found = false
+		// Loop:
+		//      For every pair of states (p, q)
         for i, st1 := range dfavar.States {
-            for j, st2 := range dfavar.States[i:] {
-                if disting[i][j] {
-                    continue
-                }
-    //          For every symbol a in the alphabet, 
-                for _, a := range dfavar.Alpha {
-    //              compare p' = delta(p, a) to q' = delta(q, a)
-                    p_prime := dfavar.TransitionTable[TransPair{st1, string(a)}]
-                    q_prime := dfavar.TransitionTable[TransPair{st2, string(a)}]
-                    
-                    //do not compare
-                    if p_prime == q_prime {
-                        continue
-                    }
+			for j, st2 := range dfavar.States {
+				if et.Distinguished(i, j) == true {
+					continue
+				}
+				//          For every symbol a in the alphabet,
+				for _, a := range dfavar.Alpha {
+					//              compare p' = delta(p, a) to q' = delta(q, a)
+					st1_prime := dfavar.TransitionTable[TransPair{st1, string(a)}]
+					st2_prime := dfavar.TransitionTable[TransPair{st2, string(a)}]
 
-                    i_prime := state_index[p_prime]
-                    j_prime := state_index[q_prime]
-                    //Swap so the larger of the two indices is first
-                    if j_prime > i_prime {
-                        k := i_prime
-                        i_prime = j_prime
-                        j_prime = k
-                    }
-    //              if (p', q') are distinguished, then (p, q) is distinguished
-                    if disting[i_prime][j_prime] {
-                        disting[i][j] = true
-                        disting_found = true
-                        fmt.Printf("Distinguishing states %v and %v\n", st1, st2)
-                    }
-                }
+					//do not compare
+					if st1_prime == st2_prime {
+						continue
+					}
+
+					i_prime := state_index[st1_prime]
+					j_prime := state_index[st2_prime]
+					//              if (p', q') are distinguished, then (p, q) is distinguished
+					if et.Distinguished(i_prime, j_prime) == true {
+						et.SetDistinguished(i, j)
+						disting_found = true
+					}
+				}
+			}
+		}
+	}
+    for i, st1 := range dfavar.States {
+		for j, st2 := range dfavar.States {
+            if j <= i {
+                continue
             }
-        }
-    //
-    }
-    //2. Coalesce the equivalent states and build a new transition table
+			if !et.Distinguished(i, j) {
+				fmt.Printf("States %v and %v are equivalent\n", st1.Name, st2.Name)
+			}
+		}
+	}
+	//2. Coalesce the equivalent states and build a new transition table
 }

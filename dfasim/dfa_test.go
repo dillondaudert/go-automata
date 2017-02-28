@@ -32,16 +32,16 @@ var testpairs = []testpair{
 var (
 	st1     = State{"A", false}
 	st2     = State{"B", true}
-    st3 = State{"C", false}
-    st4 = State{"D", false}
+	st3     = State{"C", false}
+	st4     = State{"D", false}
 	trAx    = TransPair{st1, "x"}
 	trAy    = TransPair{st1, "y"}
 	trBx    = TransPair{st2, "x"}
 	trBy    = TransPair{st2, "y"}
-    trCx = TransPair{st3, "x"}
-    trCy = TransPair{st3, "y"}
-    trDx = TransPair{st4, "x"}
-    trDy = TransPair{st4, "y"}
+	trCx    = TransPair{st3, "x"}
+	trCy    = TransPair{st3, "y"}
+	trDx    = TransPair{st4, "x"}
+	trDy    = TransPair{st4, "y"}
 	trtable = map[TransPair]State{
 		trAx: st2,
 		trAy: st1,
@@ -51,16 +51,16 @@ var (
 	trtable2 = map[TransPair]State{
 		trAx: st3,
 		trAy: st4,
-        trCx: st4,
-        trCy: st2,
-        trDx: st3,
-        trDy: st2,
+		trCx: st4,
+		trCy: st2,
+		trDx: st3,
+		trDy: st2,
 		trBx: st2,
 		trBy: st2,
 	}
 
 	sts   = []State{st1, st2}
-    sts2 = []State{st1, st2, st3, st4}
+	sts2  = []State{st1, st2, st3, st4}
 	alpha = "xy"
 )
 

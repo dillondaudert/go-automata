@@ -7,10 +7,10 @@ import (
 )
 
 func TestTraceString(t *testing.T) {
-	tr := new(trace)
-	st1 := state{"name1", false}
+	tr := new(Trace)
+	st1 := State{"name1", false}
 	symb1 := "ab"
-	st2 := state{"name2", true}
+	st2 := State{"name2", true}
 	symb2 := "b"
 
 	tr.addComputation(st1, symb1)
@@ -22,7 +22,7 @@ func TestTraceString(t *testing.T) {
 			"\nreceived:\n", strout)
 	}
 
-	st3 := state{"name3", false}
+	st3 := State{"name3", false}
 	symb3 := ""
 	tr.addComputation(st3, symb3)
 	strout = fmt.Sprintf("%v", tr)

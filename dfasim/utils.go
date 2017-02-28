@@ -1,32 +1,41 @@
-//Utility structures and their functions for package, no exported names
+//Utility structures and their functions for package
 package dfasim
 
 import "fmt"
 
-type state struct {
-	name  string
-	final bool
+// package structs ------------------------------------------------------------
+
+type State struct {
+	Name  string
+	Final bool
 }
 
-type transpair struct {
-	state  state
-	symbol string
+type TransPair struct {
+	State  State
+	Symbol string
 }
 
-func (tr transpair) String() string {
-	return fmt.Sprintf("%v, \"%v\"", tr.state.name, tr.symbol)
+type Trace []TransPair
+
+type StatePair struct {
+    State1 State
+    State2 State
 }
 
-type trace []transpair
+// package methods ------------------------------------------------------------
+
+func (tr TransPair) String() string {
+	return fmt.Sprintf("%v, \"%v\"", tr.State.Name, tr.Symbol)
+}
 
 /* AddComputation adds a State, string pair to the array slice of
  * transitions.
  */
-func (t *trace) addComputation(st state, w string) {
-	*t = append(*t, transpair{st, w})
+func (t *Trace) addComputation(st State, w string) {
+	*t = append(*t, TransPair{st, w})
 }
 
-func (t trace) String() string {
+func (t Trace) String() string {
 	var transitions string
 	for i, pair := range t {
 		if i == 0 {
@@ -36,20 +45,4 @@ func (t trace) String() string {
 		}
 	}
 	return fmt.Sprintf("%v", transitions)
-}
-
-/* Error Types -------------------------------------------------------------*/
-
-const (
-	DFAMissingParams = "Missing parameters"
-	DFAInvalidParams = "Invalid parameters"
-)
-
-type DFAError struct {
-	Type    string
-	Message string
-}
-
-func (e *DFAError) Error() string {
-	return fmt.Sprintf("DFA error encountered: %s: %s\n", e.Type, e.Message)
 }

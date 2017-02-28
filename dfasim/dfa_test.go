@@ -30,30 +30,47 @@ var testpairs = []testpair{
 }
 
 var (
-	st1     = state{"A", false}
-	st2     = state{"B", true}
-	trAx    = transpair{st1, "x"}
-	trAy    = transpair{st1, "y"}
-	trBx    = transpair{st2, "x"}
-	trBy    = transpair{st2, "y"}
-	trtable = map[transpair]state{
+	st1     = State{"A", false}
+	st2     = State{"B", true}
+    st3 = State{"C", false}
+    st4 = State{"D", false}
+	trAx    = TransPair{st1, "x"}
+	trAy    = TransPair{st1, "y"}
+	trBx    = TransPair{st2, "x"}
+	trBy    = TransPair{st2, "y"}
+    trCx = TransPair{st3, "x"}
+    trCy = TransPair{st3, "y"}
+    trDx = TransPair{st4, "x"}
+    trDy = TransPair{st4, "y"}
+	trtable = map[TransPair]State{
 		trAx: st2,
 		trAy: st1,
 		trBx: st2,
 		trBy: st2,
 	}
+	trtable2 = map[TransPair]State{
+		trAx: st3,
+		trAy: st4,
+        trCx: st4,
+        trCy: st2,
+        trDx: st3,
+        trDy: st2,
+		trBx: st2,
+		trBy: st2,
+	}
 
-	sts   = []state{st1, st2}
+	sts   = []State{st1, st2}
+    sts2 = []State{st1, st2, st3, st4}
 	alpha = "xy"
 )
 
 func TestDFA(t *testing.T) {
 	//Run the NewDFA tests
 	testcases := []struct {
-		states []state
-		state0 state
+		states []State
+		state0 State
 		alpha  string
-		tt     map[transpair]state
+		tt     map[TransPair]State
 	}{
 		{sts, st1, alpha, trtable},
 	}
@@ -71,8 +88,8 @@ func TestDFA(t *testing.T) {
 			mydfa, _ := NewDFA(tc.states, tc.state0, tc.alpha, tc.tt)
 			t.Run(fmt.Sprintf("DF%d", j), func(t *testing.T) {
 				t.Parallel()
-				tr := new(trace)
-				finalst, ok := mydfa.DeltaFunc(state{}, pair.String, tr)
+				tr := new(Trace)
+				finalst, ok := mydfa.DeltaFunc(State{}, pair.String, tr)
 				if ok != pair.Valid {
 					t.Error("Invalid string ", pair.String, " resulted in", ok,
 						"when expected: ", pair.Valid)

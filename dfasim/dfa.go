@@ -109,12 +109,12 @@ func (dfavar *DFA) Minim() {
 	et := MakeET(len(dfavar.States))
 	//Create a map from a state to its index to make this simpler
 	state_index := make(map[State]int)
-    for i, st := range dfavar.States {
-        state_index[st] = i
-    }
+	for i, st := range dfavar.States {
+		state_index[st] = i
+	}
 	disting_found := false
 	// For every pair of states, if one is final and one is not, distinguish
-    for i, st1 := range dfavar.States {
+	for i, st1 := range dfavar.States {
 		for j, st2 := range dfavar.States {
 			if st1.Final != st2.Final {
 				et.SetDistinguished(i, j)
@@ -127,7 +127,7 @@ func (dfavar *DFA) Minim() {
 		disting_found = false
 		// Loop:
 		//      For every pair of states (p, q)
-        for i, st1 := range dfavar.States {
+		for i, st1 := range dfavar.States {
 			for j, st2 := range dfavar.States {
 				if et.Distinguished(i, j) == true {
 					continue
@@ -154,15 +154,17 @@ func (dfavar *DFA) Minim() {
 			}
 		}
 	}
-    for i, st1 := range dfavar.States {
+	for i, st1 := range dfavar.States {
 		for j, st2 := range dfavar.States {
-            if j <= i {
-                continue
-            }
+			if j <= i {
+				continue
+			}
 			if !et.Distinguished(i, j) {
 				fmt.Printf("States %v and %v are equivalent\n", st1.Name, st2.Name)
 			}
 		}
 	}
 	//2. Coalesce the equivalent states and build a new transition table
+    
+    
 }

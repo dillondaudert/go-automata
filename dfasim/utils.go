@@ -5,6 +5,8 @@ import "fmt"
 
 // package structs ------------------------------------------------------------
 
+type EquivSet map[State]struct{}
+
 type State struct {
 	Name  string
 	Final bool
@@ -26,29 +28,43 @@ type EquivTable [][]bool
 
 // package methods ------------------------------------------------------------
 
-func MakeET(numStates int) (EquivTable) {
-    et := make([][]bool, numStates, numStates)
-    for i := 0; i < numStates; i++ {
-        et[i] = make([]bool, numStates, numStates)
+func (es EquivSet) IsMember(st State) bool {
+    _, ok := es[st]
+    return ok
+}
+
+func (es *EquivSet) AddMember(st State) {
+    m := *es
+    m[st] = *new(struct{})
+}
+
+func (es EquivSet) Members() ([]State) {
+    membs := make([]State, 0, len(es))
+    for memb := range es {
+        membs = append(membs, memb)
     }
-    return et
+    return membs
+}
+
+//Return a new Equivalence Table with size numStates x numStates
+func MakeET(numStates int) EquivTable {
+	et := make([][]bool, numStates, numStates)
+	for i := 0; i < numStates; i++ {
+		et[i] = make([]bool, numStates, numStates)
+	}
+	return et
 }
 
 //Set a pair of states as distinguished in the Equivalence Table
 func (et EquivTable) SetDistinguished(p int, q int) {
-    et[p][q] = true
-    et[q][p] = true
-    return
+	et[p][q] = true
+	et[q][p] = true
+	return
 }
 
 //Get whether a pair of states are distinguished in the Equivalence Table
 func (et EquivTable) Distinguished(p int, q int) bool {
-    if p > q {
-        k := p
-        p = q
-        q = k
-    }
-    return et[p][q]
+	return et[p][q]
 }
 
 func (tr TransPair) String() string {

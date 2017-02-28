@@ -93,7 +93,7 @@ func TestDFA(t *testing.T) {
 				if ok != pair.Valid {
 					t.Error("Invalid string ", pair.String, " resulted in", ok,
 						"when expected: ", pair.Valid)
-				} else if finalst.final != pair.Accept {
+				} else if finalst.Final != pair.Accept {
 					t.Error("String ", pair.String, "resulted in ", finalst,
 						"when expected: ", pair.Accept)
 					t.Error(tr)

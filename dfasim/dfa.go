@@ -154,17 +154,33 @@ func (dfavar *DFA) Minim() {
 			}
 		}
 	}
+
+	//2. Coalesce the equivalent states and build a new transition table
+    sets := make([]EquivSet, 0, len(dfavar.States))
 	for i, st1 := range dfavar.States {
 		for j, st2 := range dfavar.States {
-			if j <= i {
-				continue
-			}
+            new_set := true
 			if !et.Distinguished(i, j) {
-				fmt.Printf("States %v and %v are equivalent\n", st1.Name, st2.Name)
+                //For all the current equiv sets, check if either are members
+                for k, set := range sets {
+                    if set.IsMember(st1) || set.IsMember(st2) {
+                        set.AddMember(st1)
+                        set.AddMember(st2)
+//                        fmt.Printf("%v and %v added to equiv set %d\n", st1, st2, k)
+                        new_set = false
+                    } 
+                }
+                if new_set == true {
+                    add_set := make(EquivSet)
+                    add_set.AddMember(st1)
+                    add_set.AddMember(st2)
+                    sets = append(sets, add_set)
+//                    fmt.Printf("%v and %v added to NEW equiv set\n", st1, st2)                    
+                }
 			}
 		}
 	}
-	//2. Coalesce the equivalent states and build a new transition table
-    
-    
+    for i, set := range sets {
+        fmt.Printf("Set %d: %v\n--\n", i, set)
+    }
 }

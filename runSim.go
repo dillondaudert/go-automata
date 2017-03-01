@@ -38,8 +38,14 @@ var (
 )
 
 func main() {
+    test_str := "1001101"
 	mydfa, _ := dfasim.NewDFA(sts_ex4, stA, alpha_ex4, tt_ex4)
-	mydfa.Minim()
-	fmt.Printf("The equivalent states are: (%v, %v), (%v, %v), (%v, %v)\n",
-		stE, stA, stH, stB, stF, stD)
+    minimdfa, _ := mydfa.Minim()
+    tr := new(dfasim.Trace)
+    _, _ = mydfa.DeltaFunc(dfasim.State{}, test_str, tr)
+    fmt.Printf("Original DFA Trace: \n%v", tr)
+
+    tr2 := new(dfasim.Trace)
+    _, _ = minimdfa.DeltaFunc(dfasim.State{}, test_str, tr2)
+    fmt.Printf("Minimized DFA Trace: \n%v", tr2)
 }

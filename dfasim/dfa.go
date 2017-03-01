@@ -3,7 +3,10 @@
  */
 package dfasim
 
-import "fmt"
+import (
+    "fmt"
+    "bytes"
+)
 
 // A struct that defines a particular deterministic finite automaton
 type DFA struct {
@@ -81,6 +84,7 @@ func (dfavar *DFA) DeltaFunc(st State, w string, tr *Trace) (final State, ok boo
 	//Start of computation, begin at State0
 	if st.Name == "" {
 		st = dfavar.State0
+        tr.addComputation(st, w)
 	}
 
 	//Split character off of w; w = au
@@ -104,7 +108,7 @@ func (dfavar *DFA) DeltaFunc(st State, w string, tr *Trace) (final State, ok boo
  * DFA.Minim turns the calling DFA into an equivalent DFA with the minimum
  * number of states.
  */
-func (dfavar *DFA) Minim() {
+func (dfavar *DFA) Minim() (*DFA, error) {
 	//1. Build the table of distinguishable states
 	et := MakeET(len(dfavar.States))
 	//Create a map from a state to its index to make this simpler
@@ -155,18 +159,17 @@ func (dfavar *DFA) Minim() {
 		}
 	}
 
-	//2. Coalesce the equivalent states and build a new transition table
+	//2. Coalesce the equivalent states
     sets := make([]EquivSet, 0, len(dfavar.States))
 	for i, st1 := range dfavar.States {
 		for j, st2 := range dfavar.States {
             new_set := true
 			if !et.Distinguished(i, j) {
                 //For all the current equiv sets, check if either are members
-                for k, set := range sets {
+                for _, set := range sets {
                     if set.IsMember(st1) || set.IsMember(st2) {
                         set.AddMember(st1)
                         set.AddMember(st2)
-//                        fmt.Printf("%v and %v added to equiv set %d\n", st1, st2, k)
                         new_set = false
                     } 
                 }
@@ -175,12 +178,56 @@ func (dfavar *DFA) Minim() {
                     add_set.AddMember(st1)
                     add_set.AddMember(st2)
                     sets = append(sets, add_set)
-//                    fmt.Printf("%v and %v added to NEW equiv set\n", st1, st2)                    
                 }
 			}
 		}
 	}
-    for i, set := range sets {
-        fmt.Printf("Set %d: %v\n--\n", i, set)
+
+    //Build new DFA
+    sts_new := make([]State, 0, len(sets))
+    trtable_new := make(map[TransPair]State)
+    var st0_new State
+
+    //For each set of equiv states, create a new single state
+    for _, set := range sets {
+        var final bool
+        //Find the target set for the transition
+        var name bytes.Buffer
+        //Build composite name
+        for state, _ := range set {
+            name.WriteString(state.Name)
+            final = state.Final
+        }
+        sts_new = append(sts_new, State{name.String(), final})
     }
+
+    //Build each transition for the new states
+    for i, set := range sets {
+        if set.IsMember(dfavar.State0) == true {
+            st0_new = sts_new[i]
+            fmt.Printf("%v is new State0\n", st0_new)
+        }
+        //Get a member
+        memb := set.RandomMember()
+        fmt.Printf("%v is random member from set index %d\n", memb, i)
+        //Create new transitions for each symbol in alphabet
+        for _, a := range dfavar.Alpha {
+            memb_out := dfavar.TransitionTable[TransPair{memb, string(a)}]
+            //Find which set memb_out is in
+            for k, set := range sets {
+                fmt.Printf("Looking for %v in %v: %v\n", memb_out, set, set.IsMember(memb_out))
+                if set.IsMember(memb_out) == true {
+                    //Since the indices in sts_new are the same, we can 
+                    //create the transition like this
+                    fmt.Printf("Adding transition (%v, %v) = %v\n", sts_new[i],
+                        string(a), sts_new[k])
+                    trtable_new[TransPair{sts_new[i], string(a)}] = sts_new[k]
+                }
+            }
+        }
+    
+    }
+
+    //Return a new DFA
+    return NewDFA(sts_new, st0_new, dfavar.Alpha, trtable_new)
 }

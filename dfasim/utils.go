@@ -28,6 +28,13 @@ type EquivTable [][]bool
 
 // package methods ------------------------------------------------------------
 
+func (es EquivSet) RandomMember() (State) {
+    for k, _ := range es {
+        return k
+    }
+    return State{}
+}
+
 func (es EquivSet) IsMember(st State) bool {
     _, ok := es[st]
     return ok

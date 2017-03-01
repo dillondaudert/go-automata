@@ -205,27 +205,21 @@ func (dfavar *DFA) Minim() (*DFA, error) {
     for i, set := range sets {
         if set.IsMember(dfavar.State0) == true {
             st0_new = sts_new[i]
-            fmt.Printf("%v is new State0\n", st0_new)
         }
         //Get a member
         memb := set.RandomMember()
-        fmt.Printf("%v is random member from set index %d\n", memb, i)
         //Create new transitions for each symbol in alphabet
         for _, a := range dfavar.Alpha {
             memb_out := dfavar.TransitionTable[TransPair{memb, string(a)}]
             //Find which set memb_out is in
             for k, set := range sets {
-                fmt.Printf("Looking for %v in %v: %v\n", memb_out, set, set.IsMember(memb_out))
                 if set.IsMember(memb_out) == true {
                     //Since the indices in sts_new are the same, we can 
                     //create the transition like this
-                    fmt.Printf("Adding transition (%v, %v) = %v\n", sts_new[i],
-                        string(a), sts_new[k])
                     trtable_new[TransPair{sts_new[i], string(a)}] = sts_new[k]
                 }
             }
         }
-    
     }
 
     //Return a new DFA

@@ -1,4 +1,3 @@
-//Utility structures and their functions for package
 package dfasim
 
 import (
@@ -6,6 +5,7 @@ import (
 	"fmt"
 )
 
+//Utility structures and their functions for package
 // package structs ------------------------------------------------------------
 
 type EquivSet map[State]struct{}
@@ -50,34 +50,32 @@ func (et EquivTable) FormatTable(states []State) string {
 		et_string.WriteString("\n")
 	}
 
-    return et_string.String()
+	return et_string.String()
 }
 
-
-
-func (es EquivSet) RandomMember() (State) {
-    for k, _ := range es {
-        return k
-    }
-    return State{}
+func (es EquivSet) RandomMember() State {
+	for k, _ := range es {
+		return k
+	}
+	return State{}
 }
 
 func (es EquivSet) IsMember(st State) bool {
-    _, ok := es[st]
-    return ok
+	_, ok := es[st]
+	return ok
 }
 
 func (es *EquivSet) AddMember(st State) {
-    m := *es
-    m[st] = *new(struct{})
+	m := *es
+	m[st] = *new(struct{})
 }
 
-func (es EquivSet) Members() ([]State) {
-    membs := make([]State, 0, len(es))
-    for memb := range es {
-        membs = append(membs, memb)
-    }
-    return membs
+func (es EquivSet) Members() []State {
+	membs := make([]State, 0, len(es))
+	for memb := range es {
+		membs = append(membs, memb)
+	}
+	return membs
 }
 
 //Return a new Equivalence Table with size numStates x numStates

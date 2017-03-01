@@ -1,4 +1,3 @@
-//Tests for the dfa.go package
 package dfasim
 
 import (

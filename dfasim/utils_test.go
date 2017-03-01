@@ -1,5 +1,6 @@
-//Test functions for the utils.go utilities
 package dfasim
+
+//Test functions for the utils.go utilities
 
 import (
 	"fmt"
@@ -7,18 +8,17 @@ import (
 )
 
 type testCase struct {
-    st State
-    member bool
+	st     State
+	member bool
 }
 
-
 func TestTraceString(t *testing.T) {
-    st1 := State{"name1", false}
-    st2 := State{"name2", true}
-    st3 := State{"name3", false}
-    symb1 := "ab"
-    symb2 := "b"
-    symb3 := ""
+	st1 := State{"name1", false}
+	st2 := State{"name2", true}
+	st3 := State{"name3", false}
+	symb1 := "ab"
+	symb2 := "b"
+	symb3 := ""
 	tr := new(Trace)
 
 	tr.addComputation(st1, symb1)
@@ -40,30 +40,30 @@ func TestTraceString(t *testing.T) {
 
 }
 
-var testpairs_2 = []testCase {
-    {st1, true},
-    {st2, true},
-    {st3, false},
+var testpairs_2 = []testCase{
+	{st1, true},
+	{st2, true},
+	{st3, false},
 }
 
 func TestEquivSet(t *testing.T) {
-    es := make(EquivSet)
-    es.AddMember(st1)
-    es.AddMember(st2)
- 
-    for _,tp := range testpairs_2 {
-        exp := tp.member
-        out := es.IsMember(tp.st)
-        if out != exp {
-            t.Error("EquivSet IsMember for %v returned %v when expected %v\n", st1, tp.st, exp)
-        }
-    }
+	es := make(EquivSet)
+	es.AddMember(st1)
+	es.AddMember(st2)
 
-    exp := []State{st1, st2}
-    out := es.Members()
-    for i, _ := range out {
-        if exp[i] != out[i] {
-            t.Error("EquivSet Members returned %v, expected %v\n", out, exp)
-        }
-    }
+	for _, tp := range testpairs_2 {
+		exp := tp.member
+		out := es.IsMember(tp.st)
+		if out != exp {
+			t.Error("EquivSet IsMember for %v returned %v when expected %v\n", st1, tp.st, exp)
+		}
+	}
+
+	exp := []State{st1, st2}
+	out := es.Members()
+	for i, _ := range out {
+		if exp[i] != out[i] {
+			t.Error("EquivSet Members returned %v, expected %v\n", out, exp)
+		}
+	}
 }

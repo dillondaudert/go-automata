@@ -1,7 +1,10 @@
 //Utility structures and their functions for package
 package dfasim
 
-import "fmt"
+import (
+	"bytes"
+	"fmt"
+)
 
 // package structs ------------------------------------------------------------
 
@@ -24,9 +27,33 @@ type StatePair struct {
 	State2 State
 }
 
-type EquivTable [][]bool
+type EquivTable [][]int
 
 // package methods ------------------------------------------------------------
+
+func (et EquivTable) FormatTable(states []State) string {
+	var et_string bytes.Buffer
+	et_string.WriteString(fmt.Sprintf("    |"))
+	for _, st := range states {
+		et_string.WriteString(fmt.Sprintf(" %3s |", st.Name))
+	}
+	et_string.WriteString("\n")
+	for i, st1 := range states {
+		et_string.WriteString(fmt.Sprintf("%3s |", st1.Name))
+		for k, _ := range states {
+			if k >= i {
+				et_string.WriteString(fmt.Sprintf("     |"))
+			} else {
+				et_string.WriteString(fmt.Sprintf(" %3d |", et[i][k]))
+			}
+		}
+		et_string.WriteString("\n")
+	}
+
+    return et_string.String()
+}
+
+
 
 func (es EquivSet) RandomMember() (State) {
     for k, _ := range es {
@@ -55,23 +82,29 @@ func (es EquivSet) Members() ([]State) {
 
 //Return a new Equivalence Table with size numStates x numStates
 func MakeET(numStates int) EquivTable {
-	et := make([][]bool, numStates, numStates)
+	et := make([][]int, numStates, numStates)
 	for i := 0; i < numStates; i++ {
-		et[i] = make([]bool, numStates, numStates)
+		et[i] = make([]int, numStates, numStates)
+	}
+
+	for i := 0; i < numStates; i++ {
+		for k := 0; k < numStates; k++ {
+			et[i][k] = -1
+		}
 	}
 	return et
 }
 
 //Set a pair of states as distinguished in the Equivalence Table
-func (et EquivTable) SetDistinguished(p int, q int) {
-	et[p][q] = true
-	et[q][p] = true
+func (et EquivTable) SetDistinguished(p int, q int, round int) {
+	et[p][q] = round
+	et[q][p] = round
 	return
 }
 
 //Get whether a pair of states are distinguished in the Equivalence Table
 func (et EquivTable) Distinguished(p int, q int) bool {
-	return et[p][q]
+	return et[p][q] != -1
 }
 
 func (tr TransPair) String() string {

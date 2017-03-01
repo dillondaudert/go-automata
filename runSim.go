@@ -32,19 +32,87 @@ func main() {
     scanner3 := bufio.NewScanner(file3)
     mydfa3 := ParseDFA(scanner3)
 
-    minim1, _ := mydfa1.Minim()
-    minim2, _ := mydfa2.Minim()
-    minim3, _ := mydfa3.Minim()
+    et1, minim1 := mydfa1.Minim()
+    et2, minim2 := mydfa2.Minim()
+    et3, minim3 := mydfa3.Minim()
+
+    var tr *dfasim.Trace
+
+//EXAMPLE 4.8
+    fmt.Printf("Example 4.8 DFA:\n%v\n", mydfa1)
+    tr = new(dfasim.Trace)
+    finalst, _ := mydfa1.DeltaFunc(dfasim.State{}, "0101", tr)
+    fmt.Printf("Trace: \n%v", tr)
+    fmt.Printf("Accepted: %v\n", finalst.Final)
+
+    tr = new(dfasim.Trace)
+    finalst, _ = mydfa1.DeltaFunc(dfasim.State{}, "0111", tr)
+    fmt.Printf("Trace: \n%v", tr)
+    fmt.Printf("Accepted: %v\n\n", finalst.Final)
 
 
-/*
-    fmt.Printf("DFA1 -- \n%+v\n", mydfa1)
-    fmt.Printf("DFA1 Minim -- \n%+v\n\n", minim1)
-    fmt.Printf("DFA2 -- \n%v\n", mydfa2)
-    fmt.Printf("DFA2 Minim -- \n%v\n\n", minim2)
-    fmt.Printf("DFA3 -- \n%v\n", mydfa3)
-    fmt.Printf("DFA3 Minim -- \n%v\n\n", minim3)
-*/
+    fmt.Printf("Example 4.8 Minimized DFA:\n%v\n", minim1)
+    fmt.Printf("Distinguishable States Table (number is round, -1 means equivalent):\n%s\n", et1.FormatTable(mydfa1.States))
+    tr = new(dfasim.Trace)
+    finalst, _ = minim1.DeltaFunc(dfasim.State{}, "0101", tr)
+    fmt.Printf("Trace: \n%v", tr)
+    fmt.Printf("Accepted: %v\n", finalst.Final)
+
+    tr = new(dfasim.Trace)
+    finalst, _ = minim1.DeltaFunc(dfasim.State{}, "0111", tr)
+    fmt.Printf("Trace: \n%v", tr)
+    fmt.Printf("Accepted: %v\n\n", finalst.Final)
+
+
+//EXAMPLE 4.14
+    fmt.Printf("Example 4.14 DFA:\n%v\n", mydfa2)
+    tr = new(dfasim.Trace)
+    finalst, _ = mydfa2.DeltaFunc(dfasim.State{}, "0100", tr)
+    fmt.Printf("Trace: \n%v", tr)
+    fmt.Printf("Accepted: %v\n", finalst.Final)
+
+    tr = new(dfasim.Trace)
+    finalst, _ = mydfa2.DeltaFunc(dfasim.State{}, "0111", tr)
+    fmt.Printf("Trace: \n%v", tr)
+    fmt.Printf("Accepted: %v\n\n", finalst.Final)
+
+
+    fmt.Printf("Example 4.14 Minimized DFA:\n%v\n", minim2)
+    fmt.Printf("Distinguishable States Table (number is round, -1 means equivalent):\n%s\n", et2.FormatTable(mydfa2.States))
+    tr = new(dfasim.Trace)
+    finalst, _ = minim2.DeltaFunc(dfasim.State{}, "0100", tr)
+    fmt.Printf("Trace: \n%v", tr)
+    fmt.Printf("Accepted: %v\n", finalst.Final)
+
+    tr = new(dfasim.Trace)
+    finalst, _ = minim2.DeltaFunc(dfasim.State{}, "0111", tr)
+    fmt.Printf("Trace: \n%v", tr)
+    fmt.Printf("Accepted: %v\n\n", finalst.Final)
+
+
+//EXAMPLE 4.15
+    fmt.Printf("Example 4.15 DFA:\n%v\n", mydfa3)
+    tr = new(dfasim.Trace)
+    finalst, _ = mydfa3.DeltaFunc(dfasim.State{}, "11", tr)
+    fmt.Printf("Trace: \n%v", tr)
+    fmt.Printf("Accepted: %v\n", finalst.Final)
+
+    tr = new(dfasim.Trace)
+    finalst, _ = mydfa3.DeltaFunc(dfasim.State{}, "01111", tr)
+    fmt.Printf("Trace: \n%v", tr)
+    fmt.Printf("Accepted: %v\n\n", finalst.Final)
+    fmt.Printf("Example 4.15 Minimized DFA:\n%v\n", minim3)
+    fmt.Printf("Distinguishable States Table (number is round, -1 means equivalent):\n%s\n", et3.FormatTable(mydfa3.States))
+    tr = new(dfasim.Trace)
+    finalst, _ = minim3.DeltaFunc(dfasim.State{}, "11", tr)
+    fmt.Printf("Trace: \n%v", tr)
+    fmt.Printf("Accepted: %v\n", finalst.Final)
+
+    tr = new(dfasim.Trace)
+    finalst, _ = minim3.DeltaFunc(dfasim.State{}, "01111", tr)
+    fmt.Printf("Trace: \n%v", tr)
+    fmt.Printf("Accepted: %v\n\n", finalst.Final)
+
 }
 
 func ParseDFA(scanner *bufio.Scanner) (*dfasim.DFA) {

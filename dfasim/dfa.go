@@ -16,6 +16,12 @@ type DFA struct {
 	TransitionTable map[TransPair]State
 }
 
+var (
+    round int
+)
+
+//dfasim functions ------------------------------------------------------------
+
 // Build a valid DFA and return a pointer to it
 func NewDFA(states []State, state0 State, alpha string, tt map[TransPair]State) (*DFA, error) {
 
@@ -68,6 +74,35 @@ func NewDFA(states []State, state0 State, alpha string, tt map[TransPair]State) 
 	return newdfa, nil
 }
 
+// dfasim methods --------------------------------------------------------------
+
+/* DFA implements the Stringer interface
+ * Return a nicely formatted transition table
+ */
+func (dfavar *DFA) String() string {
+    var tt_string bytes.Buffer
+    tt_string.WriteString(fmt.Sprintf("    |"))
+    for _, a := range dfavar.Alpha {
+        tt_string.WriteString(fmt.Sprintf(" %3s |", string(a)))
+    }
+    tt_string.WriteString("\n")
+    for _, state := range dfavar.States {
+        tt_string.WriteString(fmt.Sprintf("%3s |", state.Name))
+        for _, a := range dfavar.Alpha {
+            out_state := dfavar.TransitionTable[TransPair{state, string(a)}]
+            tt_string.WriteString(fmt.Sprintf(" %3s |", out_state.Name))
+        }
+        if state.Final == true {
+            tt_string.WriteString(" *")
+        }
+        if state == dfavar.State0 {
+            tt_string.WriteString(" <-")
+        }
+        tt_string.WriteString("\n")
+    }
+    return tt_string.String()
+}
+
 /*
  * DFA.DeltaFunc returns the result of the extended transition function for
  * the calling DFA.
@@ -106,11 +141,12 @@ func (dfavar *DFA) DeltaFunc(st State, w string, tr *Trace) (final State, ok boo
 
 /*
  * DFA.Minim turns the calling DFA into an equivalent DFA with the minimum
- * number of states.
+ * number of states
  */
-func (dfavar *DFA) Minim() (*DFA, error) {
+func (dfavar *DFA) Minim() (EquivTable, *DFA) {
 	//1. Build the table of distinguishable states
 	et := MakeET(len(dfavar.States))
+        round = 0
 	//Create a map from a state to its index to make this simpler
 	state_index := make(map[State]int)
 	for i, st := range dfavar.States {
@@ -121,13 +157,14 @@ func (dfavar *DFA) Minim() (*DFA, error) {
 	for i, st1 := range dfavar.States {
 		for j, st2 := range dfavar.States {
 			if st1.Final != st2.Final {
-				et.SetDistinguished(i, j)
+				et.SetDistinguished(i, j, round)
 				disting_found = true
 			}
 		}
 	}
 	// If a distinguishable state was found last round:
 	for disting_found == true {
+                round = round + 1
 		disting_found = false
 		// Loop:
 		//      For every pair of states (p, q)
@@ -151,7 +188,7 @@ func (dfavar *DFA) Minim() (*DFA, error) {
 					j_prime := state_index[st2_prime]
 					//              if (p', q') are distinguished, then (p, q) is distinguished
 					if et.Distinguished(i_prime, j_prime) == true {
-						et.SetDistinguished(i, j)
+						et.SetDistinguished(i, j, round)
 						disting_found = true
 					}
 				}
@@ -223,5 +260,6 @@ func (dfavar *DFA) Minim() (*DFA, error) {
     }
 
     //Return a new DFA
-    return NewDFA(sts_new, st0_new, dfavar.Alpha, trtable_new)
+    newdfa, _ := NewDFA(sts_new, st0_new, dfavar.Alpha, trtable_new)
+    return et, newdfa
 }

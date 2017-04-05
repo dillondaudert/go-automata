@@ -6,6 +6,13 @@ import (
 )
 
 //Utility structures and their functions for package
+
+// interfaces -----------------------------------------------------------------
+type StateSet interface {
+    IsMember(State) bool
+    Members() []State
+}
+
 // package structs ------------------------------------------------------------
 
 type EquivSet map[State]struct{}
@@ -18,6 +25,11 @@ type State struct {
 type TransPair struct {
 	State  State
 	Symbol string
+}
+
+type NFATransPair struct {
+    States  StateSet
+    Symbol  string
 }
 
 type Trace []TransPair
@@ -68,6 +80,11 @@ func (es EquivSet) IsMember(st State) bool {
 func (es *EquivSet) AddMember(st State) {
 	m := *es
 	m[st] = *new(struct{})
+}
+
+func (es *EquivSet) DelMember(st State) {
+    m := *es
+    delete(m, st)
 }
 
 func (es EquivSet) Members() []State {

@@ -8,6 +8,42 @@ import (
     "strings"
 )
 
+// A struct for a particular nondeterministic finite automaton with lambda transitions
+type NFA_l struct {
+    States []State
+    State0 State
+    Alpha string
+    TTable map[TransPair]StateSet
+}
+
+// Perform the extended transition function for an NFA-l
+func (nfavar *NFA_l) DeltaFunc(w string, tr *Trace) (bool, bool) {
+    return false, false
+}
+
+//Compute the lambda closure for a particular set of states in an NFA-l
+func (nfavar *NFA_l) Lclosure(stset *StateSet) (StateSet) {
+    //Make a copy of the set of states
+    lclose := *stset
+    iterate := true
+    for iterate {
+        iterate = false
+        //For each state in the set, perform lambda transitions
+        for _,state := range lclose.Members() {
+            //if transition exists
+            if rset, ok := nfavar.TTable[TransPair{state, "lambda"}]; ok {
+                //if states not already in lclosure
+                if !IsSubset(rset, lclose) {
+                    lclose = Union(&lclose, &rset)
+                    iterate = true
+                }
+            }
+            
+        }
+    }
+    return lclose
+}
+
 // A struct for a particular nondeterministic finite automaton
 type NFA struct {
     States  []State
@@ -18,7 +54,7 @@ type NFA struct {
 
 /* Perform the extended transition function of a Nondeterministic Finite Automaton
  */
-func (nfavar *NFA) DeltaFunc(w string, tr *Trace) (final bool, ok bool) {
+func (nfavar *NFA) DeltaFunc(w string, tr *Trace) (bool, bool) {
     //A set of states, demonstrating the current state of the automaton
     curr_state := make(EquivSet)
     next_state := make(EquivSet)

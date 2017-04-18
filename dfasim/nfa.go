@@ -5,7 +5,7 @@
 package dfasim
 
 import (
-    "fmt"
+    "strings"
 )
 
 // A struct for a particular nondeterministic finite automaton
@@ -28,13 +28,18 @@ func (nfavar *NFA) DeltaFunc(w string, tr *Trace) (final bool, ok bool) {
     //Loop through the string
     for i := 0; i < len(w); i++ {
         var a = string(w[i])
+
+        //Verify that the letter is in the alphabet
+        if !strings.Contains(nfavar.Alpha, a) {
+            return false, false
+        }
+
         //For each state in curr_state, perform transition on next character
         for _, state := range curr_state.Members() {
             if res, ok := nfavar.TTable[TransPair{state, a}]; !ok {
                 continue
             } else {
                 //Add results of computation to next_state, remove that state from curr_state
-                fmt.Printf("Transition (%s, %s) -> {%v}\n", state.Name, a, res.Members())
                 for _, res_state := range res.Members() {
                     next_state.AddMember(res_state)
                 }
@@ -43,7 +48,7 @@ func (nfavar *NFA) DeltaFunc(w string, tr *Trace) (final bool, ok bool) {
         }
         //If there were no valid transitions for this input symbol, this string isn't in the alphabet
         if len(next_state.Members()) == 0 {
-            return false, false
+            return false, true
         }
         //  Change next_state to curr_state
         tmp = next_state

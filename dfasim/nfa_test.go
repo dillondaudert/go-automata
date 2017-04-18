@@ -5,55 +5,23 @@ import (
     "testing"
 )
 
-var (
-    st1 = State{"A", false}
-    st2 = State{"B", false}
-    st3 = State{"C", false}
-    st4 = State{"D", true}
-
-    sts = []State{st1, st2, st3, st4}
-
-    trAa = TransPair{st1, "a"}
-    trBb = TransPair{st2, "b"}
-    trBd = TransPair{st2, "d"}
-    trCc = TransPair{st3, "c"}
-    trCd = TransPair{st3, "d"}
-
-    alpha = "abcd"
-    
-    Aa_out = EquivSet{
-        st1: *new(struct{}),
-        st2: *new(struct{}),
-        st3: *new(struct{}),
-    }
-    Bb_out = EquivSet{
-        st2: *new(struct{}),
-    }
-    Cc_out = EquivSet{
-        st3: *new(struct{}),
-    }
-    d_out = EquivSet{
-        st4: *new(struct{}),
-    }
-
-    trtable = map[TransPair]StateSet{
-        trAa: Aa_out,
-        trBb: Bb_out,
-        trCc: Cc_out,
-        trBd: d_out,
-        trCd: d_out,
-    }
-)
-
 func TestNFA(t *testing.T) {
+
     //Test the NFA struct
-    nfa := NFA{sts, st1, alpha, trtable}
-    tr := new(Trace)
-    //fmt.Printf("An NFA: %v\n", nfa)
-    t.Run(fmt.Sprintf("NFA/"), func(t *testing.T) {
-        final, ok := nfa.DeltaFunc("ab", tr)
-        if final != false || ok == false {
-            t.Error("NFA Delta Func Error")
+    //L(M) = a+(b* U c*)d
+    nfa_cases := get_test_nfas()
+    for i, nfa_case := range nfa_cases {
+        for j, pair := range nfa_case.Pairs {
+            tr := new(Trace)
+            t.Run(fmt.Sprintf("NFA/%d:%d", i,j), func(t *testing.T) {
+                accept, ok := nfa_case.TestNFA.DeltaFunc(pair.String, tr)
+                if accept != pair.Accept || ok != pair.Valid {
+                    t.Error("NFA Test Error: Expected (", pair.Accept,
+                        ",", pair.Valid, "), Got (", accept, ", ", ok,
+                        ")\n")
+                    t.Error(tr)
+                }
+            })
         }
-    })
+    }
 }

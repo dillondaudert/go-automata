@@ -9,6 +9,7 @@ import (
 
 // interfaces -----------------------------------------------------------------
 type StateSet interface {
+    RandomMember() State
     IsMember(State) bool
     Members() []State
 }
@@ -65,6 +66,41 @@ func (et EquivTable) FormatTable(states []State) string {
 	return et_string.String()
 }
 
+func SetEqual(s1 StateSet, s2 StateSet) bool {
+    if len(s1.Members()) != len(s2.Members()) {
+        return false
+    }
+    for _,memb := range s1.Members() {
+        if !s2.IsMember(memb) {
+            return false
+        }
+    }
+    return true
+}
+
+// IsSubset checks if s1 is a subset of s2
+func IsSubset(s1 StateSet, s2 StateSet) bool {
+    for _,memb := range s1.Members() {
+        if !s2.IsMember(memb) {
+            return false
+        }
+    }
+    return true
+}
+
+// Return the union of two sets of states
+func Union(s1 *StateSet, s2 *StateSet) StateSet {
+    res := make(EquivSet)
+    
+    for _,memb := range (*s1).Members() {
+        res.AddMember(memb)
+    }
+    for _,memb := range (*s2).Members() {
+        res.AddMember(memb)
+    }
+    return res
+}
+
 func (es EquivSet) RandomMember() State {
 	for k, _ := range es {
 		return k
@@ -76,6 +112,7 @@ func (es EquivSet) IsMember(st State) bool {
 	_, ok := es[st]
 	return ok
 }
+
 
 func (es *EquivSet) AddMember(st State) {
 	m := *es

@@ -15,7 +15,52 @@ type nfacase struct {
 type nfalcase struct {
     TestNFAl NFA_l
     Pairs []testpair
-    Closures map[State] StateSet
+    Closures map[State] EquivSet
+}
+
+type regexcase struct {
+    Regex string
+    Pairs []testpair
+}
+
+func get_test_regex() []regexcase {
+    cases := []regexcase{
+        {"(a+b)*", []testpair{
+            {"abab", true, true},
+            {"baba", true, true},
+            {"a", true, true},
+            {"b", true, true},
+            {"", true, true},
+            {"aaa", true, true},
+            {"xaa", false, false},
+            {"ababx", false, false},
+            },
+        },
+        {"(a+b)(x)*(a+b)", []testpair{
+            {"axa", true, true},
+            {"axxb", true, true},
+            {"ba", true, true},
+            {"xab", false, true},
+            {"bxxxxa", true, true},
+            {"bxxx", false, true},
+            {"axxbd", false, false},
+            },
+        },
+        {"((a+b)(x)*(a+b))(xab)*", []testpair{
+            {"axa", true, true},
+            {"axxb", true, true},
+            {"ba", true, true},
+            {"xab", false, true},
+            {"bxxxxa", true, true},
+            {"bxxx", false, true},
+            {"axxbd", false, false},
+            {"bbxabxab", true, true},
+            {"aaxab", true, true},
+            {"bxxxbxabxabxab", true, true},
+            },
+        },
+    }
+    return cases
 }
 
 /* get_test_nfas()
@@ -55,7 +100,7 @@ func get_test_nfas() []nfacase {
 			st4: *new(struct{}),
 		}
 
-		trtable = map[TransPair]StateSet{
+		trtable = map[TransPair]EquivSet{
 			trAa: Aa_out,
 			trBb: Bb_out,
 			trCc: Cc_out,
@@ -128,7 +173,7 @@ func get_test_nfals() []nfalcase {
             r_par: *new(struct{}),
         }
 
-        trtable_l = map[TransPair]StateSet{
+        trtable_l = map[TransPair]EquivSet{
             trSl: Sl,
             trLparl: Lparl,
             trS1a: S1a,
@@ -192,7 +237,7 @@ func get_test_nfals() []nfalcase {
 
 
 
-    closures := map[State]StateSet {
+    closures := map[State]EquivSet {
         s: sclose,
         l_par: lparclose,
         s1: s1close,

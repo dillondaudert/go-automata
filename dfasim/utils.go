@@ -28,6 +28,7 @@ type TransPair struct {
 	Symbol string
 }
 
+
 type NFATransPair struct {
     States  StateSet
     Symbol  string
@@ -35,14 +36,32 @@ type NFATransPair struct {
 
 type Trace []TransPair
 
-type StatePair struct {
-	State1 State
-	State2 State
-}
-
 type EquivTable [][]int
 
+type TransTable map[TransPair]EquivSet
+
 // package methods ------------------------------------------------------------
+
+func (es *EquivSet) String() string{
+    var es_string bytes.Buffer
+    es_string.WriteString(fmt.Sprintf("Set: {"))
+    for _, el := range es.Members() {
+        es_string.WriteString(fmt.Sprintf("%v,", el.Name))
+    }
+    es_string.WriteString(fmt.Sprintf("}\n"))
+
+    return es_string.String()
+}
+
+func (tt *TransTable) AddTransition(in State, a string, out State) {
+    if out_set, ok := (*tt)[TransPair{in, a}]; ok {
+        //A transition from this state on this input exists, add to the set
+        out_set.AddMember(out)
+        (*tt)[TransPair{in, a}] = out_set
+    } else {
+        (*tt)[TransPair{in, a}] = EquivSet{out:*new(struct{}),}
+    }
+}
 
 func (et EquivTable) FormatTable(states []State) string {
 	var et_string bytes.Buffer
@@ -89,7 +108,7 @@ func IsSubset(s1 StateSet, s2 StateSet) bool {
 }
 
 // Return the union of two sets of states
-func Union(s1 *StateSet, s2 *StateSet) StateSet {
+func Union(s1 *EquivSet, s2 *EquivSet) EquivSet {
     res := make(EquivSet)
     
     for _,memb := range (*s1).Members() {

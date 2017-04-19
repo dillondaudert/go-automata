@@ -1,7 +1,7 @@
 /*
  * The main package reads, minimizes, and tests a few different DFAs
  */
-package main
+package project1
 
 import (
 	"./regex"

@@ -1,15 +1,9 @@
-package dfasim
+package regex
 
 import (
 	"fmt"
 	"testing"
 )
-
-type testpair struct {
-	String string
-	Accept bool
-	Valid  bool
-}
 
 var testpairs = []testpair{
 	{"yyx", true, true},
@@ -102,5 +96,3 @@ func TestDFA(t *testing.T) {
 	}
 }
 
-func parallelDeltaTest(t *testing.T) {
-}

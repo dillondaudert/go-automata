@@ -1,5 +1,5 @@
 //Test utilities and structures
-package dfasim
+package regex
 
 type testpair struct {
 	String string

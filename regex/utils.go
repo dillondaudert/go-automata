@@ -1,4 +1,4 @@
-package dfasim
+package regex
 
 import (
 	"bytes"

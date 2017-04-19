@@ -2,7 +2,7 @@
  * Simulate the behavior of NFAs and NFA-lambdas
  */
 
-package dfasim
+package regex
 
 import (
     "strings"

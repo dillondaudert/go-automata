@@ -1,4 +1,4 @@
-package dfasim
+package regex
 
 //Test functions for the utils.go utilities
 

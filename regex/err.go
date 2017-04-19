@@ -1,5 +1,5 @@
 //Error types and functions for the dfasim package
-package dfasim
+package regex
 
 import "fmt"
 

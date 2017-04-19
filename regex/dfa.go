@@ -1,7 +1,7 @@
 /*Deterministic Finite Automaton
 *Simulate the behavior of a DFA
  */
-package dfasim
+package regex
 
 import (
 	"bytes"

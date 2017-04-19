@@ -2,7 +2,7 @@
  * Turn a regular expression in an automaton
  */
 
-package dfasim
+package regex
 
 import (
     "strconv"
